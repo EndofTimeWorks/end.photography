@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Draft photography viewing interface for End Photography."
+    >
+    <title>End Photography Draft Gallery</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="photos.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="shell-header">
+      <a class="brand" href="./" aria-label="End Photography draft home">
+        <span>End</span>
+        <span>Photography</span>
+      </a>
+      <nav class="tabs" id="filters" aria-label="Gallery sections">
+        <button class="tab is-active" type="button" data-filter="all">All</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="status" aria-label="Site status">
+        <p class="eyebrow">Public page stays unchanged</p>
+        <h1>Gallery draft</h1>
+        <p>
+          This is a private working layout for the future photography viewer.
+          The live root page can remain under construction while this is built out.
+        </p>
+      </section>
+
+      <section class="toolbar" aria-label="Gallery tools">
+        <label class="search">
+          <span>Search</span>
+          <input type="search" id="search" placeholder="Title, tag, or location">
+        </label>
+        <label class="select">
+          <span>Sort</span>
+          <select id="sort">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="title">Title</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="gallery" id="gallery" aria-label="Photo gallery"></section>
+    </main>
+
+    <dialog class="viewer" id="viewer" aria-label="Photo viewer">
+      <button class="viewer__close" type="button" aria-label="Close viewer" title="Close">&times;</button>
+      <div class="viewer__stage">
+        <img class="viewer__image" id="viewer-image" alt="">
+        <span class="watermark viewer__watermark" aria-hidden="true"></span>
+        <button class="viewer__nav viewer__nav--previous" type="button" aria-label="Previous photo" title="Previous photo">&larr;</button>
+        <button class="viewer__nav viewer__nav--next" type="button" aria-label="Next photo" title="Next photo">&rarr;</button>
+      </div>
+      <div class="viewer__meta">
+        <div class="viewer__kicker">
+          <p class="eyebrow" id="viewer-category"></p>
+          <span id="viewer-counter" aria-live="polite"></span>
+        </div>
+        <h2 id="viewer-title"></h2>
+        <p id="viewer-description"></p>
+      </div>
+    </dialog>
+  </body>
+</html>
