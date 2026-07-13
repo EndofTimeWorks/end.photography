@@ -4,6 +4,8 @@ set -euo pipefail
 
 readonly WATERMARK="EndofTimeWorks"
 readonly MAX_SIZE="2400x2400>"
+readonly WATERMARK_TILE_SIZE="600x300"
+readonly WATERMARK_CANVAS_SIZE="2400x2400"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
 PROJECT_DIR="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
@@ -35,13 +37,22 @@ magick "${input}" \
   -auto-orient \
   -strip \
   -resize "${MAX_SIZE}" \
-  -gravity southeast \
-  -font DejaVu-Sans-Bold \
-  -pointsize 42 \
-  -fill "rgba(255,255,255,0.72)" \
-  -stroke "rgba(0,0,0,0.58)" \
-  -strokewidth 2 \
-  -annotate +48+40 "${WATERMARK}" \
+  \( \
+    -size "${WATERMARK_TILE_SIZE}" \
+    xc:none \
+    -gravity center \
+    -font DejaVu-Sans-Bold \
+    -pointsize 34 \
+    -fill "rgba(255,255,255,0.24)" \
+    -stroke "rgba(0,0,0,0.18)" \
+    -strokewidth 1 \
+    -annotate 25x25 "${WATERMARK}" \
+    -write mpr:watermark \
+    +delete \
+  \) \
+  \( -size "${WATERMARK_CANVAS_SIZE}" tile:mpr:watermark \) \
+  -compose over \
+  -composite \
   -quality 86 \
   "${output}"
 

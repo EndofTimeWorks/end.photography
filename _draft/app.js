@@ -1,7 +1,3 @@
-const siteConfig = {
-  watermarkText: "EndofTimeWorks",
-};
-
 const photos = Array.isArray(window.photoLibrary) ? window.photoLibrary : [];
 const state = {
   filter: "all",
@@ -21,7 +17,6 @@ const viewerTitle = document.querySelector("#viewer-title");
 const viewerCategory = document.querySelector("#viewer-category");
 const viewerDescription = document.querySelector("#viewer-description");
 const viewerCounter = document.querySelector("#viewer-counter");
-const viewerWatermark = document.querySelector(".viewer__watermark");
 const viewerClose = document.querySelector(".viewer__close");
 const viewerPrevious = document.querySelector(".viewer__nav--previous");
 const viewerNext = document.querySelector(".viewer__nav--next");
@@ -127,7 +122,6 @@ function renderGallery() {
                 decoding="async"
                 draggable="false"
               >
-              <span class="watermark" aria-hidden="true">${siteConfig.watermarkText}</span>
               <span class="photo-tag">${escapeHtml(photo.category)}</span>
             </div>
             <div class="photo-meta">
@@ -162,7 +156,6 @@ function showViewerPhoto() {
 
   viewerImage.src = photo.src;
   viewerImage.alt = photo.alt;
-  viewerWatermark.textContent = siteConfig.watermarkText;
   viewerCategory.textContent = photo.category;
   viewerTitle.textContent = photo.title;
   viewerDescription.textContent = photo.description;

@@ -1,0 +1,22 @@
+[Unit]
+Description=End Photography private upload service
+After=network.target
+
+[Service]
+Type=simple
+User=endphoto
+Group=endphoto
+WorkingDirectory=/opt/end-photography-uploader
+EnvironmentFile=/etc/end-photography-uploader.env
+ExecStart=/opt/end-photography-uploader/venv/bin/gunicorn --workers 2 --bind 127.0.0.1:8092 --access-logfile - --error-logfile - "app:create_app()"
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/end-photography /var/www/end.photography/photos /var/www/end.photography/data
+
+[Install]
+WantedBy=multi-user.target

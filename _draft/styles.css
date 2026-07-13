@@ -216,20 +216,6 @@ select:focus {
   transform: scale(1.015);
 }
 
-.watermark {
-  position: absolute;
-  right: 14px;
-  bottom: 12px;
-  z-index: 2;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.68rem;
-  font-weight: 850;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.72);
-  text-transform: uppercase;
-  pointer-events: none;
-  user-select: none;
-}
-
 .photo-tag {
   position: absolute;
   left: 14px;
@@ -334,12 +320,6 @@ select:focus {
   height: 100%;
   display: block;
   object-fit: contain;
-}
-
-.viewer__watermark {
-  right: 20px;
-  bottom: 18px;
-  font-size: 0.82rem;
 }
 
 .viewer__nav {

@@ -11,7 +11,8 @@ contains the future gallery interface.
 
 The preparation script creates a web-sized WebP in `_draft/photos/`, strips
 embedded metadata, corrects orientation, and permanently adds the
-`EndofTimeWorks` watermark. It refuses to overwrite an existing output.
+`EndofTimeWorks` watermark as a repeated diagonal pattern. It refuses to
+overwrite an existing output.
 
 Do not place full-resolution originals in this repository. The browser overlay
 is useful for presentation, but the exported web copy should also contain a

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>End Photography Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+  </head>
+  <body>
+    <header class="header">
+      <div>
+        <p class="eyebrow">End Photography</p>
+        <h1>Photo uploader</h1>
+      </div>
+      <span class="status">Private</span>
+    </header>
+
+    <main>
+      {% if request.args.get('uploaded') %}
+        <p class="notice" role="status">Photo processed and published successfully.</p>
+      {% endif %}
+      {% if request.args.get('deleted') %}
+        <p class="notice" role="status">Photo and stored original deleted.</p>
+      {% endif %}
+
+      <section class="upload-panel" aria-labelledby="upload-heading">
+        <div class="section-heading">
+          <p class="eyebrow">New photo</p>
+          <h2 id="upload-heading">Upload an edited original</h2>
+          <p>The server creates the web copy and applies the repeated EndofTimeWorks watermark.</p>
+        </div>
+
+        <form action="{{ url_for('upload_photo') }}" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+          <label class="field field--wide">
+            <span>Photo</span>
+            <input type="file" name="photo" accept="image/jpeg,image/png,image/tiff,image/webp" required>
+          </label>
+
+          <label class="field">
+            <span>Title</span>
+            <input type="text" name="title" maxlength="160" required>
+          </label>
+
+          <label class="field">
+            <span>Category</span>
+            <input type="text" name="category" maxlength="80" placeholder="portrait">
+          </label>
+
+          <label class="field">
+            <span>Date</span>
+            <input type="date" name="date">
+          </label>
+
+          <label class="field">
+            <span>Location</span>
+            <input type="text" name="location" maxlength="160">
+          </label>
+
+          <label class="field field--wide">
+            <span>Tags</span>
+            <input type="text" name="tags" maxlength="500" placeholder="portrait, outdoor, evening">
+          </label>
+
+          <label class="field field--wide">
+            <span>Description</span>
+            <textarea name="description" rows="4" maxlength="2000"></textarea>
+          </label>
+
+          <button type="submit">Process and publish</button>
+        </form>
+      </section>
+
+      <section class="library" aria-labelledby="library-heading">
+        <div class="section-heading">
+          <p class="eyebrow">Library</p>
+          <h2 id="library-heading">Processed photos</h2>
+        </div>
+
+        {% if photos %}
+          <div class="photo-list">
+            {% for photo in photos %}
+              <article class="photo-row">
+                <img src="/photos/{{ photo.public_filename }}" alt="{{ photo.title }}">
+                <div>
+                  <h3>{{ photo.title }}</h3>
+                  <p>{{ photo.category }}{% if photo.photo_date %} - {{ photo.photo_date }}{% endif %}</p>
+                </div>
+                <form class="delete-form" action="{{ url_for('delete_photo', photo_id=photo.id) }}" method="post" onsubmit="return confirm('Delete this photo and its stored original?')">
+                  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                  <button class="delete-button" type="submit">Delete</button>
+                </form>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty">No photos uploaded yet.</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
