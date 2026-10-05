@@ -12,65 +12,109 @@
         <p class="eyebrow">End Photography</p>
         <h1>Photo uploader</h1>
       </div>
-      <span class="status">Private</span>
+      <div class="header-actions">
+        <a class="header-link" href="{{ url_for('public_preview') }}">Public preview</a>
+        <span class="status">Private</span>
+      </div>
     </header>
 
     <main>
-      {% if request.args.get('uploaded') %}
-        <p class="notice" role="status">Photo processed and published successfully.</p>
+      {% if request.args.get('uploaded') and not batch_id %}
+        <p class="notice" role="status">{{ request.args.get('uploaded') }} photo{% if request.args.get('uploaded') != '1' %}s{% endif %} processed and published.</p>
+      {% endif %}
+      {% if request.args.get('published') %}
+        <p class="notice" role="status">{{ request.args.get('published') }} photo{% if request.args.get('published') != '1' %}s{% endif %} published. Review the remaining items.</p>
+      {% endif %}
+      {% if request.args.get('failed') %}
+        <p class="notice notice--error" role="alert">{{ request.args.get('failed') }} photo{% if request.args.get('failed') != '1' %}s{% endif %} could not be processed.</p>
       {% endif %}
       {% if request.args.get('deleted') %}
         <p class="notice" role="status">Photo and stored original deleted.</p>
       {% endif %}
 
-      <section class="upload-panel" aria-labelledby="upload-heading">
-        <div class="section-heading">
-          <p class="eyebrow">New photo</p>
-          <h2 id="upload-heading">Upload an edited original</h2>
-          <p>The server creates the web copy and applies the repeated EndofTimeWorks watermark.</p>
-        </div>
+      {% if stages %}
+        <section class="review" aria-labelledby="review-heading">
+          <div class="section-heading">
+            <p class="eyebrow">Review batch</p>
+            <h2 id="review-heading">Metadata and previews</h2>
+            <p>Fields were filled from the XMP sidecar and embedded Adobe, IPTC, or EXIF metadata where available.</p>
+          </div>
 
-        <form action="{{ url_for('upload_photo') }}" method="post" enctype="multipart/form-data">
-          <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+          <form class="review-form" action="{{ url_for('publish_batch', batch_id=batch_id) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <div class="review-list">
+              {% for stage in stages %}
+                {% set metadata = stage.metadata %}
+                <article class="review-item">
+                  <img src="{{ url_for('staged_preview', stage_id=stage.id) }}" alt="Preview of {{ metadata.title or stage.original_name }}">
+                  <div class="review-fields">
+                    <div class="review-file">
+                      <h3>{{ stage.original_name }}</h3>
+                      <p>{{ metadata.source }}{% if metadata.creator %} - {{ metadata.creator }}{% endif %}</p>
+                    </div>
 
-          <label class="field field--wide">
-            <span>Photo</span>
-            <input type="file" name="photo" accept="image/jpeg,image/png,image/tiff,image/webp" required>
-          </label>
+                    <label class="field">
+                      <span>Title</span>
+                      <input type="text" name="title_{{ stage.id }}" maxlength="160" value="{{ metadata.title }}">
+                    </label>
 
-          <label class="field">
-            <span>Title</span>
-            <input type="text" name="title" maxlength="160" required>
-          </label>
+                    <label class="field">
+                      <span>Category</span>
+                      <input type="text" name="category_{{ stage.id }}" maxlength="80" placeholder="portrait">
+                    </label>
 
-          <label class="field">
-            <span>Category</span>
-            <input type="text" name="category" maxlength="80" placeholder="portrait">
-          </label>
+                    <label class="field">
+                      <span>Date</span>
+                      <input type="date" name="date_{{ stage.id }}" value="{{ metadata.date }}">
+                    </label>
 
-          <label class="field">
-            <span>Date</span>
-            <input type="date" name="date">
-          </label>
+                    <label class="field">
+                      <span>Location</span>
+                      <input type="text" name="location_{{ stage.id }}" maxlength="160" value="{{ metadata.location }}">
+                    </label>
 
-          <label class="field">
-            <span>Location</span>
-            <input type="text" name="location" maxlength="160">
-          </label>
+                    <label class="field field--wide">
+                      <span>Tags</span>
+                      <input type="text" name="tags_{{ stage.id }}" maxlength="500" value="{{ metadata.tags | join(', ') }}">
+                    </label>
 
-          <label class="field field--wide">
-            <span>Tags</span>
-            <input type="text" name="tags" maxlength="500" placeholder="portrait, outdoor, evening">
-          </label>
+                    <label class="field field--wide">
+                      <span>Description</span>
+                      <textarea name="description_{{ stage.id }}" rows="3" maxlength="2000">{{ metadata.description }}</textarea>
+                    </label>
+                  </div>
+                </article>
+              {% endfor %}
+            </div>
+            <button type="submit">Publish {{ stages | length }} watermarked photo{% if stages | length != 1 %}s{% endif %}</button>
+          </form>
+        </section>
+      {% else %}
+        <section class="upload-panel" aria-labelledby="upload-heading">
+          <div class="section-heading">
+            <p class="eyebrow">New batch</p>
+            <h2 id="upload-heading">Upload photos</h2>
+            <p>Select up to 20 photos and any matching Adobe XMP sidecars.</p>
+          </div>
 
-          <label class="field field--wide">
-            <span>Description</span>
-            <textarea name="description" rows="4" maxlength="2000"></textarea>
-          </label>
+          <form id="upload-form" action="{{ url_for('inspect_photos') }}" method="post" enctype="multipart/form-data" data-standard-action="{{ url_for('inspect_photos') }}" data-raw-action="{{ raw_upload_url }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
-          <button type="submit">Process and publish</button>
-        </form>
-      </section>
+            <label class="field field--wide">
+              <span>Photos</span>
+              <input id="photo-input" type="file" name="photo" accept=".jpg,.jpeg,.png,.tif,.tiff,.webp,.raw,.dng,.cr2,.cr3,.nef,.arw,.orf,.rw2,.raf" multiple required>
+              <small id="upload-mode">JPG, PNG, TIFF, and WebP up to 100 MB each</small>
+            </label>
+
+            <label class="field field--wide">
+              <span>Adobe XMP sidecars <small>optional</small></span>
+              <input type="file" name="sidecar" accept=".xmp,application/rdf+xml,application/xml,text/xml" multiple>
+            </label>
+
+            <button type="submit">Preview and fill metadata</button>
+          </form>
+        </section>
+      {% endif %}
 
       <section class="library" aria-labelledby="library-heading">
         <div class="section-heading">
@@ -81,14 +125,18 @@
         {% if photos %}
           <div class="photo-list">
             {% for photo in photos %}
+              {% set metadata = photo.metadata_json | from_json %}
               <article class="photo-row">
-                <img src="/photos/{{ photo.public_filename }}" alt="{{ photo.title }}">
+                <img src="{{ url_for('preview_photo', photo_id=photo.id) }}" alt="{{ photo.title }}">
                 <div>
                   <h3>{{ photo.title }}</h3>
                   <p>{{ photo.category }}{% if photo.photo_date %} - {{ photo.photo_date }}{% endif %}</p>
+                  {% if metadata.creator or metadata.source %}
+                    <p class="metadata">{% if metadata.creator %}{{ metadata.creator }} - {% endif %}{{ metadata.source }}</p>
+                  {% endif %}
                 </div>
                 <form class="delete-form" action="{{ url_for('delete_photo', photo_id=photo.id) }}" method="post" onsubmit="return confirm('Delete this photo and its stored original?')">
-                  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                   <button class="delete-button" type="submit">Delete</button>
                 </form>
               </article>
@@ -99,5 +147,22 @@
         {% endif %}
       </section>
     </main>
+
+    {% if not stages %}
+      <script>
+        const rawExtensions = new Set(["raw", "dng", "cr2", "cr3", "nef", "arw", "orf", "rw2", "raf"]);
+        const uploadForm = document.querySelector("#upload-form");
+        const photoInput = document.querySelector("#photo-input");
+        const uploadMode = document.querySelector("#upload-mode");
+
+        photoInput.addEventListener("change", () => {
+          const hasRaw = Array.from(photoInput.files).some((file) => rawExtensions.has(file.name.split(".").pop().toLowerCase()));
+          uploadForm.action = hasRaw ? uploadForm.dataset.rawAction : uploadForm.dataset.standardAction;
+          uploadMode.textContent = hasRaw
+            ? "Camera RAW up to 1 GB each; 4 GB maximum batch via private Tailscale"
+            : "JPG, PNG, TIFF, and WebP up to 100 MB each";
+        });
+      </script>
+    {% endif %}
   </body>
 </html>

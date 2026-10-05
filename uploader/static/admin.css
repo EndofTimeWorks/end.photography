@@ -8,6 +8,7 @@
   --line: #35312c;
   --accent: #d6b06f;
   --success: #9cc6a5;
+  --error: #e5a2a2;
 }
 
 * {
@@ -79,6 +80,26 @@ h2 {
   text-transform: uppercase;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-link {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 7px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
 main {
   padding: 28px 0 72px;
 }
@@ -91,6 +112,11 @@ main {
   color: var(--success);
 }
 
+.notice--error {
+  border-color: var(--error);
+  color: var(--error);
+}
+
 .upload-panel,
 .library {
   padding: 28px;
@@ -101,6 +127,60 @@ main {
 
 .library {
   margin-top: 20px;
+}
+
+.review {
+  padding: 12px 0 28px;
+}
+
+.review-form {
+  display: block;
+}
+
+.review-list {
+  display: grid;
+  gap: 18px;
+  margin: 22px 0 18px;
+}
+
+.review-item {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.85fr) minmax(0, 1.65fr);
+  gap: 22px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.review-item > img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  display: block;
+  border-radius: 5px;
+  background: #090909;
+  object-fit: contain;
+}
+
+.review-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 14px;
+}
+
+.review-file {
+  grid-column: 1 / -1;
+}
+
+.review-file p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.review-form > button {
+  width: 100%;
 }
 
 .section-heading > p:last-child {
@@ -123,6 +203,13 @@ form {
   font-size: 0.8rem;
   font-weight: 800;
   text-transform: uppercase;
+}
+
+.field small {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: none;
 }
 
 .field--wide {
@@ -193,6 +280,10 @@ button {
   color: var(--muted);
 }
 
+.photo-row .metadata {
+  font-size: 0.78rem;
+}
+
 .empty {
   margin-top: 20px;
 }
@@ -217,6 +308,11 @@ button {
     align-items: flex-start;
   }
 
+  .header-actions {
+    align-items: flex-end;
+    flex-direction: column-reverse;
+  }
+
   .upload-panel,
   .library {
     padding: 20px;
@@ -228,6 +324,21 @@ button {
 
   .field,
   .field--wide {
+    grid-column: 1;
+  }
+
+  .review-item {
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+
+  .review-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .review-file,
+  .review-fields .field,
+  .review-fields .field--wide {
     grid-column: 1;
   }
 

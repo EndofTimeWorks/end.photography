@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>End Photography Preview</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='gallery.css') }}">
+    <script>window.photoLibrary = {{ photos | tojson }};</script>
+    <script src="{{ url_for('static', filename='gallery.js') }}" defer></script>
+  </head>
+  <body>
+    <header class="shell-header">
+      <a class="brand" href="{{ url_for('public_preview') }}" aria-label="End Photography preview home">
+        <span>End</span>
+        <span>Photography</span>
+      </a>
+      <nav class="tabs" id="filters" aria-label="Gallery sections">
+        <button class="tab is-active" type="button" data-filter="all">All</button>
+      </nav>
+      <a class="admin-link" href="{{ url_for('admin_index') }}">Uploader</a>
+    </header>
+
+    <main>
+      <section class="toolbar" aria-label="Gallery tools">
+        <label class="search">
+          <span>Search</span>
+          <input type="search" id="search" placeholder="Title, tag, or location">
+        </label>
+        <label class="select">
+          <span>Sort</span>
+          <select id="sort">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="title">Title</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="gallery" id="gallery" aria-label="Photo gallery"></section>
+    </main>
+
+    <dialog class="viewer" id="viewer" aria-label="Photo viewer">
+      <button class="viewer__close" type="button" aria-label="Close viewer" title="Close">&times;</button>
+      <div class="viewer__stage">
+        <img class="viewer__image" id="viewer-image" alt="">
+        <button class="viewer__nav viewer__nav--previous" type="button" aria-label="Previous photo" title="Previous photo">&larr;</button>
+        <button class="viewer__nav viewer__nav--next" type="button" aria-label="Next photo" title="Next photo">&rarr;</button>
+      </div>
+      <div class="viewer__meta">
+        <div class="viewer__kicker">
+          <p class="eyebrow" id="viewer-category"></p>
+          <span id="viewer-counter" aria-live="polite"></span>
+        </div>
+        <h2 id="viewer-title"></h2>
+        <p id="viewer-description"></p>
+      </div>
+    </dialog>
+  </body>
+</html>
